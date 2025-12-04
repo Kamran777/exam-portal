@@ -1,0 +1,96 @@
+<app-create-modal [visible]="visible" title="Yeni Dərs" description="Qeydiyyat üçün yeni dərs əlavə edin"
+  (closed)="closeModal()">
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <div class="mb-3">
+      <label class="form-label">Dərsin kodu</label>
+      <input type="text" class="form-control" formControlName="code" />
+      @if (form.get('code')?.touched && form.get('code')?.invalid) {
+      <div class="text-danger small mt-1">
+        @if (form.get('code')?.errors?.['required']) {
+        <div>Kod daxil edilməlidir</div>
+        }
+        <!-- @if (form.get('code')?.errors?.['minlength'] || form.get('code')?.errors?.['maxlength']) {
+        <div>Kod 3 hərfdən ibarət olmalıdır (MAT, FZK)</div>
+        } -->
+        @if (form.get('code')?.errors?.['pattern']) {
+        <div>Kod yalnız 3 hərfdən ibarət olmalıdır (FZK, RYT)</div>
+        }
+      </div>
+      }
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Dərsin adı</label>
+      <input type="text" class="form-control" formControlName="name" />
+      @if (form.get('name')?.touched && form.get('name')?.invalid) {
+      <div class="text-danger small mt-1">
+        @if (form.get('name')?.errors?.['required']) {
+        <div>Ad daxil edilməlidir</div>
+        }
+        @if (form.get('name')?.errors?.['maxlength']) {
+        <div>Dərsin adı maksimum 30 hərfdən ibarət ola bilər</div>
+        }
+      </div>
+      }
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Sinif</label>
+      <input type="number" class="form-control" formControlName="grade" />
+      @if (form.get('grade')?.touched && form.get('grade')?.invalid) {
+      <div class="text-danger small mt-1">
+        @if (form.get('grade')?.errors?.['required']) {
+        <div>Sinif daxil edilməlidir</div>
+        }
+        @if (form.get('grade')?.errors?.['min']) {
+        <div>Minimum sinif 1 ola bilər</div>
+        }
+        @if (form.get('grade')?.errors?.['max']) {
+        <div>Maksimum sinif 11 ola bilər</div>
+        }
+      </div>
+      }
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Müəllim Adı</label>
+      <input type="text" class="form-control" formControlName="teacherFirstName" />
+      @if (form.get('teacherFirstName')?.touched && form.get('teacherFirstName')?.invalid) {
+      <div class="text-danger small mt-1">
+        @if (form.get('teacherFirstName')?.errors?.['required']) {
+        <div>Müəllim adı daxil edilməlidir</div>
+        }
+        @if (form.get('teacherFirstName')?.errors?.['maxlength']) {
+        <div>Müəllimin adı maksimum 20 hərfdən ibarət ola bilər</div>
+        }
+      </div>
+      }
+    </div>
+    <div class="mb-4">
+      <label class="form-label">Müəllim Soyadı</label>
+      <input type="text" class="form-control" formControlName="teacherLastName" />
+      @if (form.get('teacherLastName')?.touched && form.get('teacherLastName')?.invalid) {
+      <div class="text-danger small mt-1">
+        @if (form.get('teacherLastName')?.errors?.['required']) {
+        <div>Müəllim soyadı daxil edilməlidir</div>
+        }
+        @if (form.get('teacherLastName')?.errors?.['maxlength']) {
+        <div>Müəllimin soyadı maksimum 20 hərfdən ibarət ola bilər</div>
+        }
+      </div>
+      }
+    </div>
+    <div class="mb-3">
+      @if (errorMessage) {
+      <div class="text-danger mb-2">
+        {{ errorMessage }}
+      </div>
+      }
+    </div>
+    <div class="d-flex justify-content-end">
+      <button type="submit" class="btn btn-primary" [disabled]="form.invalid">
+        Əlavə et
+      </button>
+      <button type="button" class="btn btn-light ms-2" (click)="closeModal()">
+        İmtina
+      </button>
+    </div>
+  </form>
+</app-create-modal>

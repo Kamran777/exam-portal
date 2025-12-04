@@ -1,0 +1,44 @@
+@use '../../../../styles/variables' as *;
+@use '../../../../styles/mixins' as *;
+@use '../../../../styles/typography' as *;
+@use 'sass:color';
+@use 'sass:map';
+
+.students-header {
+  @include flex-center(row, space-between, center);
+  margin-bottom: $spacing-md;
+  padding: $spacing-md;
+  background: $color-white;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-md;
+
+  h6 {
+    margin: 0;
+    font-size: map.get($heading-h6, font-size);
+    font-weight: map.get($heading-h6, font-weight);
+    color: map.get($heading-h6, color);
+  }
+}
+
+.btn-create-student {
+  @include gradient-button(
+    $color-pink,
+    color.adjust($color-pink, $lightness: 5%),
+    rgba(233, 42, 134, 0.35)
+  );
+}
+
+.btn-create-student-blue {
+  background: linear-gradient(135deg, #594dff, #6f74ff);
+}
+
+
+.buttons-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-remove {
+  text-align: center;
+}

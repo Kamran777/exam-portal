@@ -1,0 +1,38 @@
+@use '../../../../styles/variables' as *;
+@use '../../../../styles/mixins' as *;
+@use '../../../../styles/typography' as *;
+@use 'sass:map';
+
+.lessons-header {
+  @include flex-center(row, space-between, center);
+  margin-bottom: $spacing-md;
+  padding: $spacing-md;
+  background: $color-white;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-md;
+
+  h6 {
+    margin: 0;
+    font-size: map.get($heading-h6, font-size);
+    font-weight: map.get($heading-h6, font-weight);
+    color: map.get($heading-h6, color);
+  }
+}
+
+.buttons-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-create-lesson {
+  @include gradient-button($color-primary-blue, $color-primary-purple, rgba(157, 101, 255, 0.35));
+}
+
+.btn-create-lesson-blue {
+  @include gradient-button(#594dff, #6f74ff, rgba(157, 101, 255, 0.35));
+}
+
+.btn-create-lesson-purple {
+  @include gradient-button($color-pink, #ff6fa8, rgba(255, 101, 145, 0.35));
+}

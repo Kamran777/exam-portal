@@ -1,0 +1,28 @@
+@use '../../../../styles/variables' as *;
+@use '../../../../styles/mixins' as *;
+@use '../../../../styles/typography' as *;
+@use 'sass:map';
+
+.steps-header {
+  @include flex-center(row, space-between, center);
+  margin-bottom: $spacing-md;
+  padding: $spacing-md;
+  background: $color-white;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-md;
+
+  h6 {
+    margin: 0;
+    font-size: map.get($heading-h6, font-size);
+    font-weight: map.get($heading-h6, font-weight);
+    color: map.get($heading-h6, color);
+  }
+
+  .btn-create-exam {
+    @include gradient-button($color-primary-blue, $color-primary-purple, rgba(110, 92, 255, 0.35));
+
+    i {
+      font-size: $font-xs;
+    }
+  }
+}

@@ -1,0 +1,137 @@
+.table-card-wrapper {
+  background: #ffffff;
+  padding: 22px;
+  border-radius: 20px;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.07);
+  margin-top: 10px;
+}
+
+.btn-remove {
+  text-align: center;
+}
+
+.table-controls input {
+  padding: 10px 14px;
+  font-size: 14px;
+  border-radius: 14px;
+  width: auto;
+  border: 1px solid #d6daf1;
+  transition: 0.25s;
+}
+
+.table-controls input:focus {
+  background: #ffffff;
+  border-color: #7a8cff;
+  box-shadow: 0 0 0 3px rgba(122, 140, 255, 0.25);
+}
+
+table {
+  border-collapse: separate !important;
+  border-spacing: 0 10px !important;
+}
+
+thead tr th {
+  background: linear-gradient(135deg, #ff4d79, #ff6fa8);
+  padding: 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  border: none !important;
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+}
+
+thead tr th:first-child {
+  border-top-left-radius: 14px;
+}
+
+thead tr th:last-child {
+  border-top-right-radius: 14px;
+}
+
+.sort {
+  display: inline-block;
+  margin-left: 6px;
+  width: 10px;
+  height: 10px;
+  position: relative;
+}
+
+.sort::before {
+  content: '▲';
+  font-size: 9px;
+  position: absolute;
+  top: -6px;
+  opacity: 0.3;
+}
+
+.sort::after {
+  content: '▼';
+  font-size: 9px;
+  position: absolute;
+  bottom: -6px;
+  opacity: 0.3;
+}
+
+.sort.asc::before {
+  opacity: 1;
+  color: #fff;
+}
+
+.sort.desc::after {
+  opacity: 1;
+  color: #fff;
+}
+
+tbody tr {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.07);
+  transition: 0.25s ease;
+}
+
+tbody tr:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.12);
+}
+
+tbody td {
+  padding: 16px;
+  font-size: 14px;
+  color: #424a69;
+}
+
+tbody tr td:first-child {
+  border-top-left-radius: 16px;
+  border-bottom-left-radius: 16px;
+}
+
+tbody tr td:last-child {
+  border-top-right-radius: 16px;
+  border-bottom-right-radius: 16px;
+}
+
+tbody td .small {
+  color: #7a82a6 !important;
+  font-size: 12px;
+}
+
+.pagination {
+  display: flex;
+  gap: 4px;
+}
+
+.pagination .page-item .page-link {
+  border-radius: 10px;
+  color: #555;
+  border: 1px solid #d4d7ec;
+  transition: 0.25s;
+}
+
+.pagination .page-item.active .page-link {
+  background: linear-gradient(135deg, #6c63ff, #8c3fff);
+  border: none;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(108, 99, 255, 0.4);
+}

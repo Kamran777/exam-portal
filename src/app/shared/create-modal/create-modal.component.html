@@ -1,0 +1,14 @@
+@if (visible) {
+<div class="modal-bg" (click)="close()" role="dialog" aria-modal="true">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-left">
+      <h3 class="fw-bold">{{ title }}</h3>
+      <p class="mb-0">{{ description }}</p>
+    </div>
+    <div class="modal-right position-relative">
+      <button class="close-btn" (click)="close()">✕</button>
+      <ng-content></ng-content>
+    </div>
+  </div>
+</div>
+}

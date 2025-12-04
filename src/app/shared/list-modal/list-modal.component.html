@@ -1,0 +1,13 @@
+@if (visible) {
+<div class="modal-bg" (click)="close()" role="dialog" aria-modal="true">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-wrapper">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <h5>{{ title }}</h5>
+        <button class="close-btn" (click)="close()">✕</button>
+      </div>
+      <ng-content></ng-content>
+    </div>
+  </div>
+</div>
+}

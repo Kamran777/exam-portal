@@ -1,0 +1,90 @@
+@if (vm(); as d) {
+<div class="table-card-wrapper">
+  <div class="table-controls d-flex justify-content-between mb-2">
+    <input class="form-control" placeholder="Axtar..." (input)="updateFilter($any($event.target).value)" />
+    <div>
+      <small class="text-muted">
+        Səh. ölçüsü: {{ pageSize }}
+      </small>
+    </div>
+  </div>
+
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th (click)="changeSort('lessonCode')">
+          Dərs
+          <span class="sort" [class]="getSortDir('lessonCode')"></span>
+        </th>
+        <th (click)="changeSort('studentName')">
+          Şagird
+          <span class="sort" [class.asc]="getSortDir('studentName')"></span>
+        </th>
+        <th (click)="changeSort('score')">
+          Qiymət
+          <span class="sort" [class]="getSortDir('score')"></span>
+        </th>
+        <th (click)="changeSort('date')">
+          Tarix
+          <span class="sort" [class.asc]="getSortDir('date')"></span>
+        </th>
+        <th></th>
+      </tr>
+    </thead>
+
+    <tbody>
+      @for (r of d.rows; track r.id) {
+      <tr>
+        <td>
+          <div class="small text-muted">{{ r.lessonName }}</div>
+        </td>
+        <td>{{ r.studentName }}</td>
+        <td>{{ r.score }}</td>
+        <td>{{ r.date | date: 'MM/d/yy' }}</td>
+        <td class="btn-remove">
+          <button class="btn btn-sm btn-outline-danger" (click)="openDeleteModal(r.id)">
+            Sil
+          </button>
+        </td>
+      </tr>
+      }
+
+      @if (d.rows.length === 0) {
+      <tr>
+        <td colspan="4" class="text-center text-muted p-3">
+          Uyğun imtahan(lar) tapılmadı.
+        </td>
+      </tr>
+      }
+
+    </tbody>
+  </table>
+
+  <div class="d-flex justify-content-between align-items-center mt-2">
+    <div>
+      <small class="text-muted">Ümumi: {{ d.total }}</small>
+    </div>
+    <nav>
+      <ul class="pagination">
+        <li class="page-item" [class.disabled]="d.page === 1">
+          <a class="page-link" (click)="goToPage(1)">«</a>
+        </li>
+        <li class="page-item" *ngFor="let _ of [].constructor(d.totalPages); index as idx"
+          [class.active]="d.page === idx + 1">
+          <a class="page-link" (click)="goToPage(idx + 1)">
+            {{ idx + 1 }}
+          </a>
+        </li>
+        <li class="page-item" [class.disabled]="d.page === d.totalPages">
+          <a class="page-link" (click)="goToPage(d.totalPages)">
+            »
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
+}
+
+<app-delete-modal [visible]="deleteModalVisible" (confirmed)="confirmDelete()" (closed)="closeDeleteModal()">
+</app-delete-modal>

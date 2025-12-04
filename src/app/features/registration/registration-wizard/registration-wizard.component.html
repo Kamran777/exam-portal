@@ -1,0 +1,41 @@
+@if (vm$ | async; as vm) {
+<div class="reg-card">
+  <div class="reg-header">
+    <h5>Qeydiyyat — Addım {{ step }} / {{ totalSteps }}</h5>
+    <button class="btn-cancel" (click)="cancel()">Ləğv et</button>
+  </div>
+  <div class="reg-progress">
+    <div class="progress">
+      <div class="progress-bar" [style.width.%]="progressPercent()"></div>
+    </div>
+    <div class="steps-text">
+      <span *ngFor="let s of steps; index as i" [class.active]="step === i + 1">
+        {{ s.label }}
+      </span>
+    </div>
+  </div>
+  <div class="reg-body">
+    @if(step === 1) {
+    <app-subjects-step></app-subjects-step>
+    } @else if(step === 2) {
+    <app-students-step></app-students-step>
+    } @else if(step === 3) {
+    <app-exams-step></app-exams-step>
+    }
+  </div>
+  <div class="reg-footer">
+    <button class="btn-secondary" (click)="prev()" [disabled]="step === 1">
+      Geri
+    </button>
+    @if (step < totalSteps) { <button class="btn-primary next-btn" [disabled]="!canNext(vm)" (click)="next()">
+      Növbəti
+      </button>
+      }
+      @if (step === totalSteps) {
+      <button class="btn-success confirm-btn" [disabled]="!canConfirm(vm)" (click)="confirm()">
+        Təsdiqlə
+      </button>
+      }
+  </div>
+</div>
+}

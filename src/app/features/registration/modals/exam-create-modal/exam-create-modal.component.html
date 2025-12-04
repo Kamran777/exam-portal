@@ -1,0 +1,61 @@
+<app-create-modal [visible]="visible" title="Yeni İmtahan" description="Qeydiyyat üçün yeni imtahan əlavə edin."
+  (closed)="closeModal()">
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <label class="form-label">Dərs</label>
+    <select class="form-select" formControlName="lessonCode">
+      <option value="" disabled>Dərs seçin</option>
+      @for (l of lessons ?? []; track l.id) {
+      <option [value]="l.code">{{l.name}} - {{l.teacherFirstName}} {{l.teacherLastName}} (sinif {{l.grade}})</option>
+      }
+    </select>
+    @if (form.get('lessonCode')?.touched && form.get('lessonCode')?.invalid) {
+    <div class="text-danger small mt-1">
+      @if (form.get('lessonCode')?.errors?.['required']) {
+      <div>Dərs tələb olunur</div>
+      }
+    </div>
+    }
+    <label class="form-label mt-2">Şagird</label>
+    <select class="form-select" formControlName="studentNumber">
+      <option value="" disabled>Şagird seçin</option>
+      @for (s of students ?? []; track s?.id) {
+      <option [value]="s.number">{{s.firstName}} {{s.lastName}} - {{s.number}}</option>
+      }
+    </select>
+    @if (form.get('studentNumber')?.touched && form.get('studentNumber')?.invalid) {
+    <div class="text-danger small mt-1">
+      @if (form.get('studentNumber')?.errors?.['required']) {
+      <div>Şagird tələb olunur</div>
+      }
+    </div>
+    }
+    <label class="form-label mt-2">Tarix</label>
+    <input type="date" class="form-control" formControlName="date" />
+    @if (form.get('date')?.touched && form.get('date')?.invalid) {
+    <div class="text-danger small mt-1">
+      @if (form.get('date')?.errors?.['required']) {
+      <div>Tarix tələb olunur</div>
+      }
+    </div>
+    }
+    <label class="form-label mt-2">Qiymət (0–100)</label>
+    <input type="number" class="form-control" formControlName="score" min="0" max="100" />
+    @if (form.get('score')?.touched && form.get('score')?.invalid) {
+    <div class="text-danger small mt-1">
+      @if (form.get('score')?.errors?.['required']) {
+      <div>Qiymət tələb olunur</div>
+      }
+      @if (form.get('score')?.errors?.['min']) {
+      <div>Qiymət minimum 0 ola bilər</div>
+      }
+      @if (form.get('score')?.errors?.['max']) {
+      <div>Qiymət maximum 100 ola bilər</div>
+      }
+    </div>
+    }
+    <div class="actions mt-3">
+      <button class="btn btn-primary" [disabled]="form.invalid">Əlavə et</button>
+      <button type="button" class="btn btn-light ms-2" (click)="closeModal()">İmtina</button>
+    </div>
+  </form>
+</app-create-modal>

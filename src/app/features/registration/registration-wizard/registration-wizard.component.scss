@@ -1,0 +1,94 @@
+@use '../../../../styles/variables' as *;
+@use '../../../../styles/mixins' as *;
+@use '../../../../styles/typography' as *;
+@use 'sass:color';
+@use 'sass:map';
+
+.reg-card {
+  @include card-wrapper($spacing-xl, $radius-xl, $shadow-lg);
+}
+
+.reg-header {
+  @include flex-center(row, space-between, center);
+  margin-bottom: $spacing-xl;
+
+  h5 {
+    margin: 0;
+    font-size: map.get($heading-h5, font-size);
+    font-weight: map.get($heading-h5, font-weight);
+    color: map.get($heading-h5, color);
+  }
+}
+
+.btn-cancel {
+  @include button-base($color-light-gray, $color-gray, $radius-sm, $spacing-xs, $font-xs);
+
+  &:hover {
+    background: color.adjust($color-light-gray, $lightness: 5%);
+    color: $color-gray-dark;
+  }
+}
+
+.reg-progress {
+  .progress {
+    height: 10px;
+    background: $bg-progress;
+    border-radius: $radius-full;
+  }
+
+  .progress-bar {
+    @include gradient-bar($color-primary-blue, $color-primary-purple, $shadow-sm);
+    border-radius: $radius-full;
+  }
+}
+
+.steps-text {
+  display: flex;
+  justify-content: space-between;
+  margin-top: $spacing-xs;
+  font-size: $font-xs;
+  color: $color-gray;
+
+  span.active {
+    color: $color-text;
+    font-weight: 600;
+  }
+}
+
+.reg-body {
+  margin-top: $spacing-xl;
+  min-height: 250px;
+}
+
+.reg-footer {
+  margin-top: $spacing-xl;
+  @include flex-center(row, space-between, center);
+}
+
+.btn-primary {
+  @include gradient-button($color-primary-blue, $color-primary-purple, rgba(110, 92, 255, 0.35));
+}
+
+.btn-secondary {
+  @include button-base($bg-secondary, $color-gray, $radius-lg, $spacing-md, $font-sm);
+
+  &:disabled {
+    opacity: 0.5;
+  }
+
+  &:hover {
+    background: color.adjust($bg-secondary, $lightness: 3%);
+  }
+}
+
+.btn-success {
+  @include gradient-button($color-success-start, $color-success-end, rgba(40, 199, 111, 0.35));
+}
+
+.next-btn:disabled {
+  @include disabled-button($bg-disabled, $color-white);
+}
+
+.confirm-btn:disabled {
+  @include disabled-button($bg-success-disabled, $color-white);
+}

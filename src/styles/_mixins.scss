@@ -1,0 +1,73 @@
+@use 'variables' as *;
+@use 'sass:color';
+
+@mixin flex-center($direction: row, $justify: center, $align: center) {
+  display: flex;
+  flex-direction: $direction;
+  justify-content: $justify;
+  align-items: $align;
+}
+
+@mixin gradient-button($from, $to, $shadow) {
+  background: linear-gradient(135deg, $from, $to);
+  box-shadow: $shadow;
+  border: none;
+  border-radius: $radius-md;
+  padding: 7px 18px;
+  font-weight: 600;
+  font-size: 14px;
+  color: $color-white;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: 0.25s;
+  cursor: pointer;
+
+  &:hover {
+    transform: translateY(-2px);
+    //box-shadow: color.adjust($shadow, $lightness: 10%);
+  }
+}
+
+@mixin card-wrapper($padding: $spacing-lg, $radius: $radius-lg, $shadow: $shadow-md) {
+  background: $color-white;
+  padding: $padding;
+  border-radius: $radius;
+  box-shadow: $shadow;
+}
+
+@mixin disabled-button($bg, $color) {
+  background-color: $bg !important;
+  border-color: $bg !important;
+  cursor: not-allowed !important;
+  opacity: 0.7;
+  box-shadow: none !important;
+  color: $color !important;
+
+  &:hover {
+    background-color: $bg !important;
+  }
+}
+
+@mixin button-base($bg, $color, $radius: $radius-md, $padding: 7px 18px, $font-size: $font-sm) {
+  background: $bg;
+  color: $color;
+  border: none;
+  border-radius: $radius;
+  padding: $padding;
+  font-size: $font-size;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.25s;
+
+  &:hover {
+    background: color.adjust($bg, $lightness: 5%);
+  }
+}
+
+@mixin gradient-bar($from, $to, $shadow: $shadow-sm, $height: 10px, $radius: $radius-lg) {
+  background: linear-gradient(135deg, $from, $to);
+  height: $height;
+  border-radius: $radius;
+  box-shadow: $shadow;
+}

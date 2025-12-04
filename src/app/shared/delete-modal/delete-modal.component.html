@@ -1,0 +1,17 @@
+<div #deleteModal class="modal fade" id="deleteModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Silmə təsdiqi</h5>
+        <button type="button" class="btn-close" (click)="close()"></button>
+      </div>
+      <div class="modal-body">
+        Bu elementi silmək istəyirsiniz?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="close()">Ləğv et</button>
+        <button type="button" class="btn btn-danger" (click)="confirm()">Bəli, sil</button>
+      </div>
+    </div>
+  </div>
+</div>

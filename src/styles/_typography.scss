@@ -1,0 +1,40 @@
+@use "../styles/variables" as *;
+
+// Font Families
+$font-primary: 'Inter', sans-serif;
+
+// Font Sizes
+$font-xs: 12px;
+$font-sm: 14px;
+$font-md: 16px;
+$font-lg: 18px;
+$font-xl: 24px;
+
+// Headings
+$heading-h6: (
+  font-size: $font-lg,
+  font-weight: 700,
+  color: $color-text,
+);
+
+$heading-h5: (
+  font-size: $font-xl,
+  font-weight: 700,
+  color: $color-text
+);
+$heading-h4: (
+  font-size: 20px,
+  font-weight: 700,
+  color: $color-text
+);
+
+$body-text: (
+  font-size: $font-sm,
+  font-weight: 400,
+  color: $color-text
+);
+$small-text: (
+  font-size: $font-xs,
+  font-weight: 400,
+  color: $color-text
+);

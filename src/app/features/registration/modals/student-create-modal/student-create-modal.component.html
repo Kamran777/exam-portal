@@ -1,0 +1,82 @@
+<app-create-modal [visible]="visible" title="Yeni Şagird" description="Qeydiyyat üçün yeni şagird əlavə edin."
+  (closed)="closeModal()">
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="mb-3">
+        <label class="form-label">Şagirdin nömrəsi</label>
+        <input type="number" class="form-control" formControlName="number" />
+        @if (form.get('number')?.touched && form.get('number')?.invalid) {
+        <div class="text-danger small mt-1">
+          @if (form.get('number')?.errors?.['required']) {
+          <div>Nömrə tələb olunur</div>
+          }
+          @if (form.get('number')?.errors?.['min']) {
+          <div>Nömrə 1-dən kiçik ola bilməz</div>
+          }
+          @if (form.get('number')?.errors?.['max']) {
+          <div>Maksimum 5 rəqəm olmalıdır</div>
+          }
+        </div>
+        }
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Şagirdin adı</label>
+        <input type="text" class="form-control" formControlName="firstName" />
+        @if (form.get('firstName')?.touched && form.get('firstName')?.invalid) {
+        <div class="text-danger small mt-1">
+          @if (form.get('firstName')?.errors?.['required']) {
+          <div>Ad tələb olunur</div>
+          }
+          @if (form.get('firstName')?.errors?.['minlength']) {
+          <div>Ad minimum 2 simvol olmalıdır</div>
+          }
+        </div>
+        }
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Şagirdin soyadı</label>
+        <input type="text" class="form-control" formControlName="lastName" />
+        @if (form.get('lastName')?.touched && form.get('lastName')?.invalid) {
+        <div class="text-danger small mt-1">
+          @if (form.get('lastName')?.errors?.['required']) {
+          <div>Soyad tələb olunur</div>
+          }
+          @if (form.get('lastName')?.errors?.['minlength']) {
+          <div>Soyad minimum 2 simvol olmalıdır</div>
+          }
+        </div>
+        }
+      </div>
+      <div class="mb-4">
+        <label class="form-label">Sinif</label>
+        <input type="number" class="form-control" formControlName="grade" />
+        @if (form.get('grade')?.touched && form.get('grade')?.invalid) {
+        <div class="text-danger small mt-1">
+          @if (form.get('grade')?.errors?.['required']) {
+          <div>Soyad tələb olunur</div>
+          }
+          @if (form.get('grade')?.errors?.['min']) {
+          <div>Sinif minimum 1 ola bilər</div>
+          }
+          @if (form.get('grade')?.errors?.['max']) {
+          <div>Sinif maximum 11 ola bilər</div>
+          }
+        </div>
+        }
+      </div>
+      <div class="mb-3">
+        @if (errorMessage) {
+        <div class="text-danger mb-2">{{ errorMessage }}</div>
+        }
+      </div>
+      <div class="d-flex justify-content-end">
+        <button type="submit" class="btn btn-primary" [disabled]="form.invalid">
+          Əlavə et
+        </button>
+        <button type="button" class="btn btn-light ms-2" (click)="closeModal()">
+          İmtina
+        </button>
+      </div>
+    </form>
+  </form>
+</app-create-modal>

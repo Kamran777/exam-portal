@@ -1,0 +1,31 @@
+<app-list-modal [visible]="visible" title="Öncəki qeydiyyatda əlavə edilmiş dərslər" (closed)="closeModal()">
+  <table class="table table-hover lessons-table">
+    <thead>
+      <tr>
+        <th>Kod</th>
+        <th>Ad</th>
+        <th>Sinif</th>
+        <th>Müəllim</th>
+      </tr>
+    </thead>
+    <tbody>
+      @if (savedLessons; as lessons) {
+      @if (lessons.length === 0) {
+      <tr>
+        <td colspan="5" class="text-center text-muted p-3">
+          Məlumat tapılmadı
+        </td>
+      </tr>
+      }
+      @for (lesson of lessons; track lesson.id) {
+      <tr>
+        <td>{{ lesson.code }}</td>
+        <td>{{ lesson.name }}</td>
+        <td>{{ lesson.grade }}</td>
+        <td>{{ lesson.teacherFirstName }} {{ lesson.teacherLastName }}</td>
+      </tr>
+      }
+      }
+    </tbody>
+  </table>
+</app-list-modal>
