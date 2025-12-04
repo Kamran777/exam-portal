@@ -28,7 +28,10 @@
           <div>Ad tələb olunur</div>
           }
           @if (form.get('firstName')?.errors?.['minlength']) {
-          <div>Ad minimum 2 simvol olmalıdır</div>
+          <div>Ad minimum 2 hərfdən ibarət olmalıdır</div>
+          }
+          @if (form.get('firstName')?.errors?.['maxlength']) {
+          <div>Ad maksimum 30 hərfdən ibarət olmalıdır</div>
           }
         </div>
         }
@@ -42,7 +45,10 @@
           <div>Soyad tələb olunur</div>
           }
           @if (form.get('lastName')?.errors?.['minlength']) {
-          <div>Soyad minimum 2 simvol olmalıdır</div>
+          <div>Soyad minimum 2 hərfdən ibarət olmalıdır</div>
+          }
+          @if (form.get('lastName')?.errors?.['maxlength']) {
+          <div>Soyad maksimum 30 hərfdən ibarət olmalıdır</div>
           }
         </div>
         }

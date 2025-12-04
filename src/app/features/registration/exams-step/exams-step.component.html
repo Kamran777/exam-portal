@@ -5,7 +5,7 @@
   </button>
 </div>
 
-<app-table [columns]="examColumns" [rows$]="exams$" (action)="handleAction($event)">
+<app-table [columns]="examColumns" [rows$]="examRows$" (action)="handleAction($event)">
 </app-table>
 
 <app-delete-modal [visible]="deleteModalVisible" (confirmed)="confirmDelete()" (closed)="closeDeleteModal()">

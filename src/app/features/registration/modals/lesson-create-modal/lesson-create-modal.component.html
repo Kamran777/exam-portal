@@ -9,9 +9,6 @@
         @if (form.get('code')?.errors?.['required']) {
         <div>Kod daxil edilməlidir</div>
         }
-        <!-- @if (form.get('code')?.errors?.['minlength'] || form.get('code')?.errors?.['maxlength']) {
-        <div>Kod 3 hərfdən ibarət olmalıdır (MAT, FZK)</div>
-        } -->
         @if (form.get('code')?.errors?.['pattern']) {
         <div>Kod yalnız 3 hərfdən ibarət olmalıdır (FZK, RYT)</div>
         }

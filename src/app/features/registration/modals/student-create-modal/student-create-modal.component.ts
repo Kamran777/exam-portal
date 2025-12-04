@@ -60,11 +60,6 @@ export class StudentCreateModalComponent implements OnInit {
       return;
     }
 
-    // if (this.isDuplicateStudent(value)) {
-    //   this.errorMessage = this.ERROR_MESSAGES.duplicateStudent;
-    //   return;
-    // }
-
     const student: Student = {
       id: crypto.randomUUID(),
       number: +value.number,
@@ -80,8 +75,8 @@ export class StudentCreateModalComponent implements OnInit {
   private createForm(): void {
     this.form = this.fb.group({
       number: [null, [Validators.required, Validators.min(1), Validators.max(99999)]],
-      firstName: ['', [Validators.required, Validators.minLength(2)]],
-      lastName: ['', [Validators.required, Validators.minLength(2)]],
+      firstName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(30)]],
+      lastName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(30)]],
       grade: [null, [Validators.required, Validators.min(1), Validators.max(12)]],
     });
   }
@@ -91,14 +86,4 @@ export class StudentCreateModalComponent implements OnInit {
       (student) => student.number === valueNumber
     );
   }
-
-  // private isDuplicateStudent(value: any): boolean {
-  //   return [...this.currentStudents, ...this.savedStudents].some(
-  //     (student) =>
-  //       student.number === Number(value.number) &&
-  //       student.firstName.toLowerCase() === value.firstName.toLowerCase() &&
-  //       student.lastName.toLowerCase() === value.lastName.toLowerCase() &&
-  //       student.grade === Number(value.grade)
-  //   );
-  // }
 }

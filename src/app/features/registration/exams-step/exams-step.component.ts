@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Inject, OnInit } from '@angular/core';
-import { Observable } from 'rxjs';
+import { combineLatest, map, Observable } from 'rxjs';
 import { Exam } from '@core/models/exam';
 import { Lesson } from '@core/models/lesson';
 import { Student } from '@core/models/student';
@@ -22,6 +22,7 @@ export class ExamsStepComponent implements OnInit {
   exams$!: Observable<Exam[]>;
   lessons$!: Observable<Lesson[]>;
   students$!: Observable<Student[]>;
+  examRows$!: Observable<any[]>;
   showModal = false;
   deleteModalVisible = false;
 
@@ -42,6 +43,26 @@ export class ExamsStepComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadInitialData();
+    this.prepareRows();
+  }
+
+  private prepareRows(): void {
+    this.examRows$ = combineLatest([this.exams$, this.lessons$, this.students$]).pipe(
+      map(([exams, lessons, students]) =>
+        exams.map((exam) => {
+          const lesson = lessons.find((lesson) => lesson.code === exam.lessonCode);
+          const student = students.find((student) => student.number === Number(exam.studentNumber));
+
+          return {
+            ...exam,
+            lessonCode: lesson ? lesson.name : exam.lessonCode,
+            studentNumber: student
+              ? `${student.firstName} ${student.lastName}`
+              : exam.studentNumber,
+          };
+        })
+      )
+    );
   }
 
   openModal(): void {
