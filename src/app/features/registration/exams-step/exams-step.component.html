@@ -8,9 +8,4 @@
 <app-table [columns]="examColumns" [rows$]="examRows$" (action)="handleAction($event)">
 </app-table>
 
-<app-delete-modal [visible]="deleteModalVisible" (confirmed)="confirmDelete()" (closed)="closeDeleteModal()">
-</app-delete-modal>
-
-<app-exam-create-modal [visible]="showModal" (closed)="showModal = false" (created)="onCreated($event)"
-  [lessons]="lessons$ | async" [students]="students$ | async">
-</app-exam-create-modal>
+<ng-template #modalContainer></ng-template>

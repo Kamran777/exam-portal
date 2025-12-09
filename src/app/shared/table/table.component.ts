@@ -17,7 +17,7 @@ export class TableComponent<T> {
 
   state: TableState = {
     page: 1,
-    pageSize: 10,
+    pageSize: 4,
     sortField: null,
     sortDir: null,
     filter: '',

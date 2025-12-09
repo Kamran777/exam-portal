@@ -82,7 +82,7 @@ export class LessonCreateModalComponent implements OnInit {
   private isDuplicateLesson(value: any): boolean {
     const allLessons = [...this.currentLessons, ...this.savedLessons];
     return allLessons.some(
-      (lesson) =>
+      (lesson: Lesson) =>
         lesson.name.toLowerCase() === value.name.toLowerCase() &&
         lesson.grade === Number(value.grade) &&
         lesson.teacherFirstName.toLowerCase() === value.teacherFirstName.toLowerCase() &&

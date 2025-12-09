@@ -12,6 +12,7 @@ import { EXAM_STATE, LESSON_STATE, STUDENT_STATE } from '@core/state/state.token
 import { Exam } from '@core/models/exam';
 import { Lesson } from '@core/models/lesson';
 import { Student } from '@core/models/student';
+import { REGISTRATION_STEPS } from '@shared/constants/registration.constants';
 
 interface WizardViewModel {
   lessons: Lesson[];
@@ -37,8 +38,8 @@ interface WizardViewModel {
 })
 export class RegistrationWizardComponent implements OnInit {
   step = 1;
-  totalSteps = 3;
-  readonly steps = [{ label: 'Dərslər' }, { label: 'Şagirdlər' }, { label: 'İmtahanlar' }] as const;
+  readonly totalSteps = REGISTRATION_STEPS.length;
+  readonly steps = REGISTRATION_STEPS;
 
   lessons$!: Observable<Lesson[]>;
   students$!: Observable<Student[]>;
@@ -74,7 +75,7 @@ export class RegistrationWizardComponent implements OnInit {
     return stepRequirements[this.step] ?? false;
   }
 
-  confirm() {
+  confirm(): void {
     this.vm$.pipe(take(1)).subscribe((vm: WizardViewModel) => {
       this.storage.save('lessons', vm.lessons);
       this.storage.save('students', vm.students);

@@ -83,7 +83,7 @@ export class StudentCreateModalComponent implements OnInit {
 
   private isDuplicateNumber(valueNumber: number): boolean {
     return [...this.currentStudents, ...this.savedStudents].some(
-      (student) => student.number === valueNumber
+      (student: Student) => student.number === valueNumber
     );
   }
 }

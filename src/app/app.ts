@@ -1,23 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, ChangeDetectionStrategy, Inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, Inject, DestroyRef } from '@angular/core';
 import { NavigationStart, Router, RouterModule, RouterOutlet } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Exam } from '@core/models/exam';
 import { Lesson } from '@core/models/lesson';
 import { Student } from '@core/models/student';
 import { StateService } from '@core/services/state.service';
 import { EXAM_STATE, LESSON_STATE, STUDENT_STATE } from '@core/state/state.token';
-
-interface MenuItem {
-  label: string;
-  icon: string;
-  route: string;
-}
-
-interface Brand {
-  initials: string;
-  name: string;
-  footer: string;
-}
+import { Brand, BRAND, MENU_ITEMS, MenuItem } from '@shared/constants/app.constants';
 
 @Component({
   selector: 'app-root',
@@ -28,25 +18,17 @@ interface Brand {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {
-  readonly brand: Brand = {
-    initials: 'K',
-    name: 'SHUKURZADE',
-    footer: 'Made by Kamran Shukurzade',
-  };
+  readonly brand: Brand = BRAND;
+  readonly menuItems: MenuItem[] = MENU_ITEMS;
 
-  readonly menuItems: MenuItem[] = [
-    { label: 'İmtahanlar', icon: 'fa fa-edit', route: '/exams' },
-    { label: 'Dərslər', icon: 'fa fa-book-open', route: '/lessons' },
-    { label: 'Şagirdlər', icon: 'fa fa-user-graduate', route: '/students' },
-    { label: 'Qeydiyyat', icon: 'fa fa-sign', route: '/register' },
-  ];
   constructor(
     private router: Router,
     @Inject(LESSON_STATE) private lessonState: StateService<Lesson>,
     @Inject(STUDENT_STATE) private studentState: StateService<Student>,
-    @Inject(EXAM_STATE) private examState: StateService<Exam>
+    @Inject(EXAM_STATE) private examState: StateService<Exam>,
+    private destroyRef: DestroyRef
   ) {
-    this.router.events.subscribe((event) => {
+    this.router.events.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((event) => {
       if (event instanceof NavigationStart) {
         this.lessonState.clear();
         this.studentState.clear();

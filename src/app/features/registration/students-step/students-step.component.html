@@ -13,12 +13,4 @@
 <app-table [columns]="studentColumns" [rows$]="currentStudents$" (action)="handleAction($event)">
 </app-table>
 
-<app-student-create-modal [visible]="showModal" [currentStudents]="(currentStudents$ | async) ?? []"
-  [savedStudents]="(savedStudents$ | async) ?? []" (closed)="showModal = false" (created)="onCreated($event)">
-</app-student-create-modal>
-
-<app-delete-modal [visible]="deleteModalVisible" (confirmed)="confirmDelete()" (closed)="closeDeleteModal()">
-</app-delete-modal>
-
-<app-students-list-modal [visible]="showStudentListModal" [currentStudents]="(currentStudents$ | async) ?? []"
-  [savedStudents]="(savedStudents$ | async) ?? []" (closed)="showStudentListModal = false"></app-students-list-modal>
+<ng-template #modalContainer></ng-template>

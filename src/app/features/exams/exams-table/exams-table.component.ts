@@ -6,20 +6,21 @@ import {
   signal,
   computed,
   DestroyRef,
+  ViewChild,
+  ViewContainerRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Observable } from 'rxjs';
+import { Observable, combineLatest } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Exam } from '@core/models/exam';
 import { Lesson } from '@core/models/lesson';
 import { Student } from '@core/models/student';
-import { DeleteModalComponent } from '@shared/delete-modal/delete-modal.component';
 import { StorageService } from '@core/services/storage.service';
 
 @Component({
   selector: 'app-exams-table',
   standalone: true,
-  imports: [CommonModule, DeleteModalComponent],
+  imports: [CommonModule],
   templateUrl: './exams-table.component.html',
   styleUrls: ['./exams-table.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -29,19 +30,21 @@ export class ExamsTableComponent implements OnInit {
   @Input({ required: true }) lessons$!: Observable<Lesson[]>;
   @Input({ required: true }) students$!: Observable<Student[]>;
 
+  @ViewChild('modalContainer', { read: ViewContainerRef, static: true })
+  modalContainer!: ViewContainerRef;
+
+  private examToDeleteId: string | null = null;
+
   readonly pageSize = 4;
   readonly exams = signal<Exam[]>([]);
   readonly lessons = signal<Lesson[]>([]);
   readonly students = signal<Student[]>([]);
   readonly filterText = signal('');
   readonly page = signal(1);
-  readonly sortState = signal<{
-    col: string | null;
-    dir: 'asc' | 'desc' | null;
-  }>({ col: 'date', dir: 'desc' });
-
-  deleteModalVisible = false;
-  private examToDeleteId: string | null = null;
+  readonly sortState = signal<{ col: string | null; dir: 'asc' | 'desc' | null }>({
+    col: 'date',
+    dir: 'desc',
+  });
 
   constructor(private readonly destroyRef: DestroyRef, private storage: StorageService) {}
 
@@ -49,12 +52,10 @@ export class ExamsTableComponent implements OnInit {
     this.bindInputs();
   }
 
-  readonly vm = computed(() => {
-    const merged = this.mergeRows();
-    const filtered = this.filterRows(merged);
-    const sorted = this.sortRows(filtered);
-    return this.paginate(sorted);
-  });
+  readonly mergedRows = computed(() => this.mergeRows());
+  readonly filteredRows = computed(() => this.filterRows(this.mergedRows()));
+  readonly sortedRows = computed(() => this.sortRows(this.filteredRows()));
+  readonly vm = computed(() => this.paginate(this.sortedRows()));
 
   updateFilter(value: string): void {
     this.filterText.set(value);
@@ -63,7 +64,6 @@ export class ExamsTableComponent implements OnInit {
 
   changeSort(col: string): void {
     const current = this.sortState();
-
     const nextDir =
       current.col !== col
         ? 'asc'
@@ -72,7 +72,6 @@ export class ExamsTableComponent implements OnInit {
         : current.dir === 'desc'
         ? null
         : 'asc';
-
     this.sortState.set({ col, dir: nextDir });
   }
 
@@ -84,38 +83,39 @@ export class ExamsTableComponent implements OnInit {
     this.page.set(page);
   }
 
-  openDeleteModal(examId: string): void {
+  async openDeleteModal(examId: string): Promise<void> {
     this.examToDeleteId = examId;
-    this.deleteModalVisible = true;
-  }
 
-  confirmDelete(): void {
-    if (this.examToDeleteId) {
-      this.storage.delete('exams', this.examToDeleteId);
+    const { DeleteModalComponent } = await import('@shared/delete-modal/delete-modal.component');
 
-      this.exams.update((current: Exam[]) =>
-        current.filter((exam) => exam.id !== this.examToDeleteId)
-      );
-    }
-    this.deleteModalVisible = false;
-  }
+    this.modalContainer.clear();
+    const compRef = this.modalContainer.createComponent(DeleteModalComponent);
+    compRef.instance.visible = true;
 
-  closeDeleteModal(): void {
-    this.deleteModalVisible = false;
+    compRef.instance.closed.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      this.modalContainer.clear();
+      this.examToDeleteId = null;
+    });
+
+    compRef.instance.confirmed.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      if (this.examToDeleteId) {
+        this.storage.delete('exams', this.examToDeleteId);
+        this.exams.update((current: Exam[]) =>
+          current.filter((exam: Exam) => exam.id !== this.examToDeleteId)
+        );
+      }
+      this.modalContainer.clear();
+    });
   }
 
   private bindInputs(): void {
-    this.exams$
+    combineLatest([this.exams$, this.lessons$, this.students$])
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((data: Exam[]) => this.exams.set(data ?? []));
-
-    this.lessons$
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((data: Lesson[]) => this.lessons.set(data ?? []));
-
-    this.students$
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((data: Student[]) => this.students.set(data ?? []));
+      .subscribe(([exams, lessons, students]) => {
+        this.exams.set(exams ?? []);
+        this.lessons.set(lessons ?? []);
+        this.students.set(students ?? []);
+      });
   }
 
   private mergeRows() {
@@ -148,16 +148,14 @@ export class ExamsTableComponent implements OnInit {
     );
   }
 
-  private sortRows(rows: any[]): any[] {
+  private sortRows(rows: any[]) {
     const { col, dir } = this.sortState();
     if (!col || !dir) return rows;
 
     return [...rows].sort((a, b) => {
       const A = a[col];
       const B = b[col];
-
       const compare = typeof A === 'string' ? A.localeCompare(B) : Number(A) - Number(B);
-
       return dir === 'asc' ? compare : -compare;
     });
   }
@@ -165,9 +163,10 @@ export class ExamsTableComponent implements OnInit {
   private paginate(rows: any[]) {
     const page = this.page();
     const from = (page - 1) * this.pageSize;
+    const to = Math.min(from + this.pageSize, rows.length);
 
     return {
-      rows: rows.slice(from, from + this.pageSize),
+      rows: rows.slice(from, to),
       total: rows.length,
       page,
       pageSize: this.pageSize,

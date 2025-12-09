@@ -1,5 +1,5 @@
 @if (visible) {
-<div class="modal-bg" (click)="close()" role="dialog" aria-modal="true">
+<div class="modal-bg" (click)="close()" role="dialog" aria-modal="true" [attr.aria-labelledby]="'create-modal-title'">
   <div class="modal-card" (click)="$event.stopPropagation()">
     <div class="modal-left">
       <h3 class="fw-bold">{{ title }}</h3>

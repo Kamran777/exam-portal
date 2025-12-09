@@ -1,25 +1,25 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Inject, OnInit } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  Inject,
+  OnInit,
+  ViewChild,
+  ViewContainerRef,
+} from '@angular/core';
+import { firstValueFrom, Observable, of } from 'rxjs';
 import { Student } from '@core/models/student';
 import { StateService } from '@core/services/state.service';
 import { StorageService } from '@core/services/storage.service';
 import { STUDENT_STATE } from '@core/state/state.token';
-import { DeleteModalComponent } from '@shared/delete-modal/delete-modal.component';
-import { StudentCreateModalComponent } from '../modals/student-create-modal/student-create-modal.component';
-import { StudentsListModalComponent } from '../modals/students-list-modal/students-list-modal.component';
 import { TableComponent } from '@shared/table/table.component';
-import { TableColumn } from '@shared/table/table.types';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { STUDENT_COLUMNS } from '@shared/constants/student.constants';
 
 @Component({
   selector: 'app-students-step',
-  imports: [
-    CommonModule,
-    StudentCreateModalComponent,
-    DeleteModalComponent,
-    StudentsListModalComponent,
-    TableComponent,
-  ],
+  imports: [CommonModule, TableComponent],
   templateUrl: './students-step.component.html',
   styleUrls: ['./students-step.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -27,21 +27,17 @@ import { TableColumn } from '@shared/table/table.types';
 export class StudentsStepComponent implements OnInit {
   currentStudents$!: Observable<Student[]>;
   savedStudents$!: Observable<Student[]>;
-  showModal = false;
-  deleteModalVisible = false;
-  showStudentListModal = false;
-  studentColumns: TableColumn<Student>[] = [
-    { key: 'number', label: 'Nömrə', sortable: true },
-    { key: 'firstName', label: 'Ad', sortable: true },
-    { key: 'lastName', label: 'Soyad', sortable: true },
-    { key: 'grade', label: 'Sinif', sortable: true },
-  ] as const;
+  studentColumns = STUDENT_COLUMNS;
+
+  @ViewChild('modalContainer', { read: ViewContainerRef, static: true })
+  modalContainer!: ViewContainerRef;
 
   private studentId: string | null = null;
 
   constructor(
     @Inject(STUDENT_STATE) private state: StateService<Student>,
-    private storage: StorageService
+    private storage: StorageService,
+    private readonly destroyRef: DestroyRef
   ) {}
 
   ngOnInit(): void {
@@ -54,38 +50,80 @@ export class StudentsStepComponent implements OnInit {
     }
   }
 
-  openStudentsList(): void {
-    this.showStudentListModal = true;
+  async openCreate(): Promise<void> {
+    const { StudentCreateModalComponent } = await import(
+      '../modals/student-create-modal/student-create-modal.component'
+    );
+
+    this.modalContainer.clear();
+    const compRef = this.modalContainer.createComponent(StudentCreateModalComponent);
+
+    compRef.instance.visible = true;
+
+    const currentStudents = await firstValueFrom(this.currentStudents$);
+    const savedStudents = await firstValueFrom(this.savedStudents$);
+
+    compRef.instance.currentStudents = currentStudents ?? [];
+    compRef.instance.savedStudents = savedStudents ?? [];
+
+    compRef.instance.closed.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      this.modalContainer.clear();
+    });
+
+    compRef.instance.created
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((student: Student) => {
+        this.state.add(student);
+        this.modalContainer.clear();
+      });
   }
 
-  openCreate(): void {
-    this.showModal = true;
+  async openStudentsList(): Promise<void> {
+    const { StudentsListModalComponent } = await import(
+      '../modals/students-list-modal/students-list-modal.component'
+    );
+
+    this.modalContainer.clear();
+    const compRef = this.modalContainer.createComponent(StudentsListModalComponent);
+
+    compRef.instance.visible = true;
+
+    const currentStudents = await firstValueFrom(this.currentStudents$);
+    const savedStudents = await firstValueFrom(this.savedStudents$);
+
+    compRef.instance.currentStudents = currentStudents ?? [];
+    compRef.instance.savedStudents = savedStudents ?? [];
+
+    compRef.instance.closed
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.modalContainer.clear());
   }
 
-  onCreated(student: Student): void {
-    this.state.add(student);
-    this.showModal = false;
-  }
+  private async openDeleteModal(studentId: string): Promise<void> {
+    this.studentId = studentId;
 
-  confirmDelete(): void {
-    if (this.studentId) {
-      this.state.delete(this.studentId);
-      this.closeDeleteModal();
-    }
-  }
+    const { DeleteModalComponent } = await import('@shared/delete-modal/delete-modal.component');
 
-  closeDeleteModal(): void {
-    this.deleteModalVisible = false;
-    this.studentId = null;
+    this.modalContainer.clear();
+    const compRef = this.modalContainer.createComponent(DeleteModalComponent);
+
+    compRef.instance.visible = true;
+
+    compRef.instance.closed.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      this.modalContainer.clear();
+      this.studentId = null;
+    });
+
+    compRef.instance.confirmed.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      if (this.studentId) {
+        this.state.delete(this.studentId);
+      }
+      this.modalContainer.clear();
+    });
   }
 
   private loadStudents(): void {
     this.currentStudents$ = this.state.data$;
     this.savedStudents$ = of(this.storage.get<Student>('students'));
-  }
-
-  private openDeleteModal(studentId: string): void {
-    this.studentId = studentId;
-    this.deleteModalVisible = true;
   }
 }

@@ -1,25 +1,17 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Component, DestroyRef, Inject, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { firstValueFrom, Observable, of } from 'rxjs';
 import { Lesson } from '@core/models/lesson';
 import { StateService } from '@core/services/state.service';
 import { StorageService } from '@core/services/storage.service';
 import { LESSON_STATE } from '@core/state/state.token';
-import { DeleteModalComponent } from '@shared/delete-modal/delete-modal.component';
-import { LessonsListModalComponent } from '../modals/lessons-list-modal/lessons-list-modal.component';
-import { LessonCreateModalComponent } from '../modals/lesson-create-modal/lesson-create-modal.component';
 import { TableComponent } from '@shared/table/table.component';
-import { TableColumn } from '@shared/table/table.types';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { LESSON_COLUMNS } from '@shared/constants/lesson.constants';
 
 @Component({
   selector: 'app-subjects-step',
-  imports: [
-    CommonModule,
-    LessonCreateModalComponent,
-    DeleteModalComponent,
-    LessonsListModalComponent,
-    TableComponent,
-  ],
+  imports: [CommonModule, TableComponent],
   templateUrl: './lessons-step.component.html',
   styleUrls: ['./lessons-step.component.scss'],
 })
@@ -29,24 +21,17 @@ export class LessonsStepComponent implements OnInit {
   showModal = false;
   showLessonListModal = false;
   deleteModalVisible = false;
-  lessonColumns: TableColumn<Lesson>[] = [
-    { key: 'code', label: 'Kod', sortable: true },
-    { key: 'name', label: 'Ad', sortable: true },
-    { key: 'grade', label: 'Sinif', sortable: true },
-    {
-      key: 'teacherFirstName',
-      label: 'Müəllim',
-      sortable: false,
-      cell: (r) => `${r.teacherFirstName} ${r.teacherLastName}`,
-    },
-  ] as const;
+  lessonColumns = LESSON_COLUMNS;
 
   private lessonId: string | null = null;
+
+  @ViewChild('modalContainer', { read: ViewContainerRef, static: true })
+  modalContainer!: ViewContainerRef;
 
   constructor(
     @Inject(LESSON_STATE) private state: StateService<Lesson>,
     private storage: StorageService,
-    private cdr: ChangeDetectorRef
+    private readonly destroyRef: DestroyRef
   ) {}
 
   ngOnInit(): void {
@@ -59,35 +44,76 @@ export class LessonsStepComponent implements OnInit {
     }
   }
 
-  confirmDelete(): void {
-    if (this.lessonId) {
-      this.state.delete(this.lessonId);
-      this.closeDeleteModal();
-    }
+  async openCreateModal(): Promise<void> {
+    const { LessonCreateModalComponent } = await import(
+      '../modals/lesson-create-modal/lesson-create-modal.component'
+    );
+
+    this.modalContainer.clear();
+    const compRef = this.modalContainer.createComponent(LessonCreateModalComponent);
+
+    compRef.instance.visible = true;
+
+    const currentLessons = await firstValueFrom(this.currentLessons$);
+    const savedLessons = await firstValueFrom(this.savedLessons$);
+
+    compRef.instance.currentLessons = currentLessons ?? [];
+    compRef.instance.savedLessons = savedLessons ?? [];
+
+    compRef.instance.closed.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      this.modalContainer.clear();
+    });
+
+    compRef.instance.created
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((lesson: Lesson) => {
+        this.state.add(lesson);
+        this.modalContainer.clear();
+      });
   }
 
-  closeDeleteModal(): void {
-    this.deleteModalVisible = false;
-    this.lessonId = null;
+  async openLessonsList(): Promise<void> {
+    const { LessonsListModalComponent } = await import(
+      '../modals/lessons-list-modal/lessons-list-modal.component'
+    );
+
+    this.modalContainer.clear();
+    const compRef = this.modalContainer.createComponent(LessonsListModalComponent);
+
+    compRef.instance.visible = true;
+
+    const currentLessons = await firstValueFrom(this.currentLessons$);
+    const savedLessons = await firstValueFrom(this.savedLessons$);
+
+    compRef.instance.currentLessons = currentLessons ?? [];
+    compRef.instance.savedLessons = savedLessons ?? [];
+
+    compRef.instance.closed
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.modalContainer.clear());
   }
 
-  onCreated(lesson: Lesson): void {
-    this.state.add(lesson);
-    this.cdr.detectChanges();
-    this.showModal = false;
-  }
-
-  openCreateModal(): void {
-    this.showModal = true;
-  }
-
-  openLessonsList(): void {
-    this.showLessonListModal = true;
-  }
-
-  private openDeleteModal(lessonId: string): void {
+  private async openDeleteModal(lessonId: string): Promise<void> {
     this.lessonId = lessonId;
-    this.deleteModalVisible = true;
+
+    const { DeleteModalComponent } = await import('@shared/delete-modal/delete-modal.component');
+
+    this.modalContainer.clear();
+    const compRef = this.modalContainer.createComponent(DeleteModalComponent);
+
+    compRef.instance.visible = true;
+
+    compRef.instance.closed.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      this.modalContainer.clear();
+      this.lessonId = null;
+    });
+
+    compRef.instance.confirmed.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      if (this.lessonId) {
+        this.state.delete(this.lessonId);
+      }
+      this.modalContainer.clear();
+    });
   }
 
   private loadLessons(): void {

@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { Lesson } from '@core/models/lesson';
-import { ListModalComponent } from '../../../../shared/list-modal/list-modal.component';
+import { ListModalComponent } from '@shared/list-modal/list-modal.component';
 
 @Component({
   selector: 'app-lessons-list-modal',
